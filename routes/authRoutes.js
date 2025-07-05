@@ -11,6 +11,3 @@ router.post("/signup", authController.signup); // dynamic path  redirect to cont
 router.post("/login", authController.login);
 
 module.exports = router;
-
-
-// /api/user/login/

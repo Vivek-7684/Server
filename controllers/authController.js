@@ -1,6 +1,12 @@
 const bcrypt = require('bcrypt');
 const validator = require('validator');
+const jwt = require('jsonwebtoken');
 const User = require('../model/userModel');
+const dotenv = require('dotenv');
+
+dotenv.config(); // load environment variables to process.env 
+
+// console.log(process.env.SECRET_KEY);
 
 //Signup controller
 exports.signup = (req, res) => {
@@ -59,7 +65,12 @@ exports.login = (req, res) => {
 
         bcrypt.compare(password, result[0].password).then((result) => {
             if (result) {
-                res.status(200).send({ message: "Logged In" });
+                const token = jwt.sign({
+                    Email: email,
+                },process.env.SECRET_KEY);
+
+                res.status(200).send({ message: "Logged In", token: token });
+
             } else {
                 res.status(401).send({ message: "Wrong Crendentials" });
             }
