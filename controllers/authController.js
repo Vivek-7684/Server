@@ -4,43 +4,49 @@ const jwt = require('jsonwebtoken');
 const User = require('../model/userModel');
 const dotenv = require('dotenv');
 
-dotenv.config(); // load environment variables to process.env 
-
-// console.log(process.env.SECRET_KEY);
+// load environment variables to process.env
+dotenv.config();
 
 //Signup controller
 exports.signup = (req, res) => {
 
     const { username, email, password } = req.body;
 
-    if (!validator.isAlpha(username.split(' ').join(''))) {  // remove white space in username from both side 
+    if (username && (!validator.isAlpha(username.split(' ').join('')))) {  // remove white space in username from both side 
         return res.status(400).send({ message: "Name must letter only" });
     }
     else if (!validator.isEmail(email)) {
         return res.status(400).send({ message: "Email must have @ with domain and ." });
     }
     else if (!validator.isStrongPassword(password)) {  // check letter only
-        return res.status(400).send({ message: "Password must be minimum 8 characters with atleast one Capital and one small alphabet characters,one special characters and with number" });
+        return res.status(400).send({ message: "Password with Correct Format" });
     }
 
     //Check if user exists
 
     User.findUserByUsernameOREmail(username, email, async (error, result) => {
 
-        if (error) return res.status(500).send({ message: "Database Error" });
+        try {
+            const len = await result.length;
 
-        if (result.length > 0) return res.status(409).send({ message: "User Already Exist.Try with other username and email" });
+            if (error) { return res.status(500).send({ message: "Database Error" }); }
 
-        const hashedpassword = await bcrypt.hash(password, 10);
+            else if (len > 0) { return res.status(409).send({ message: "User Already Exist.Try with other username and email" }); }
 
-        // insert new user
-        User.insertUser(username, email, hashedpassword, (err) => {
+            const hashedpassword = await bcrypt.hash(password, 10);
 
-            if (err) return res.status(500).send({ message: "Database error" })
+            // insert new user
+            User.insertUser(username, email, hashedpassword, (err) => {
 
-            res.status(201).send({ message: "Created" });
-        })
+                if (err) { return res.status(500).send({ message: "Database error" }) };
 
+                res.status(201).send({ message: "Created" });
+            })
+        }
+
+        catch (error) {
+            console.log(error);
+        }
     })
 
 }
@@ -54,30 +60,36 @@ exports.login = (req, res) => {
         return res.status(400).send({ message: "Email must have @ with domain and ." });
     }
     else if (!validator.isStrongPassword(password)) {  // check letter only
-        return res.status(400).send({ message: "Password must be minimum 8 characters with atleast one Capital and one small alphabet characters,one special characters and with number" });
+        return res.status(400).send({ message: "Please Enter Valid Password Format" });
     }
 
     User.getUsernameByEmail(email, (error, result) => {
 
-        if (error) return res.status(500).send({ message: "Server Error" });
+        try {
+            if (error) return res.status(500).send({ message: "Server Error" });
 
-        if (result.length === 0) return res.status(401).send({ message: "User does not exist.Please get Registered" });
+            else if (result.length === 0) return res.status(401).send({ message: "User does not exist.Please get Registered" });
 
-        bcrypt.compare(password, result[0].password).then((result) => {
-            if (result) {
-                const token = jwt.sign({
-                    Email: email,
-                },process.env.SECRET_KEY);
+            else {
+                bcrypt.compare(password, result[0].password).then((result) => {
+                    if (result) {
+                        const token = jwt.sign({
+                            Email: email,
+                        }, process.env.SECRET_KEY);
 
-                res.status(200).send({ message: "Logged In", token: token });
+                        res.status(200).send({ message: "Logged In", token: token });
 
-            } else {
-                res.status(401).send({ message: "Wrong Crendentials" });
+                    } else {
+                        res.status(401).send({ message: "Wrong Crendentials.Try with Correct email and password" });
+                    }
+                })
+                    .catch((err) => { console.log(err) });
             }
-        })
-            .catch((err) => { console.log(err) });
+        }
+        catch (error) {
+            console.log(error);
+        }
 
     })
-
 
 }
