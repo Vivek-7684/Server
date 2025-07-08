@@ -10,13 +10,17 @@ dotenv.config();
 //Signup controller
 exports.signup = (req, res) => {
 
-    const { username, email, password } = req.body;
+    let { username, email, password } = req.body;
+
+    username = username.trim();
+    email = email.trim();
+    password = password.trim();
 
     if (username && (!validator.isAlpha(username.split(' ').join('')))) {  // remove white space in username from both side 
         return res.status(400).send({ message: "Name must letter only" });
     }
     else if (!validator.isEmail(email)) {
-        return res.status(400).send({ message: "Email must have @ with domain and ." });
+        return res.status(400).send({ message: "Please Provide Valid Email" });
     }
     else if (!validator.isStrongPassword(password)) {  // check letter only
         return res.status(400).send({ message: "Password with Correct Format" });
@@ -54,10 +58,13 @@ exports.signup = (req, res) => {
 // login 
 exports.login = (req, res) => {
 
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+
+    email = email.trim();
+    password = password.trim();
 
     if (!validator.isEmail(email)) {
-        return res.status(400).send({ message: "Email must have @ with domain and ." });
+        return res.status(400).send({ message: "Please Provide Valid Email" });
     }
     else if (!validator.isStrongPassword(password)) {  // check letter only
         return res.status(400).send({ message: "Please Enter Valid Password Format" });
