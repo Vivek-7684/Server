@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const validator = require('validator');
+const passwordValidator = require('password-validator');
 const jwt = require('jsonwebtoken');
 const User = require('../model/userModel');
 const dotenv = require('dotenv');
@@ -16,13 +17,23 @@ exports.signup = (req, res) => {
     email = email.trim();
     password = password.trim();
 
+    const passwordSchema = new passwordValidator(); // set schema for validation
+
+    passwordSchema
+        .is().min(4, 'minimum 4 character required')
+        .is().max(8, 'maximum 8 character password')
+        .has().uppercase(1, 'atleast one uppercase')
+        .has().lowercase(1, 'atleast one lowercase')
+        .has().digits(2, 'atleast two digits')
+        .has().not().spaces(); // set rules
+
     if (username && (!validator.isAlpha(username.split(' ').join('')))) {  // remove white space in username from both side 
         return res.status(400).send({ message: "Name must letter only" });
     }
     else if (!validator.isEmail(email)) {
         return res.status(400).send({ message: "Please Provide Valid Email" });
     }
-    else if (!validator.isStrongPassword(password)) {  // check letter only
+    else if (!passwordSchema.validate(password)) {  // check letter only
         return res.status(400).send({ message: "Password with Correct Format" });
     }
 
@@ -83,7 +94,7 @@ exports.login = (req, res) => {
                         const token = jwt.sign({
                             Email: email,
                         }, process.env.SECRET_KEY);
-
+                        res.setCookie('')
                         res.status(200).send({ message: "Logged In", token: token });
 
                     } else {
