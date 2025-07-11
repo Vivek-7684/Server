@@ -74,10 +74,20 @@ exports.login = (req, res) => {
     email = email.trim();
     password = password.trim();
 
+    const passwordSchema = new passwordValidator(); // set schema for validation
+
+    passwordSchema
+        .is().min(4, 'minimum 4 character required')
+        .is().max(8, 'maximum 8 character password')
+        .has().uppercase(1, 'atleast one uppercase')
+        .has().lowercase(1, 'atleast one lowercase')
+        .has().digits(2, 'atleast two digits')
+        .has().not().spaces(); // set rules
+
     if (!validator.isEmail(email)) {
         return res.status(400).send({ message: "Please Provide Valid Email" });
     }
-    else if (!validator.isStrongPassword(password)) {  // check letter only
+    else if (!passwordSchema.validate(password)) {  // check letter only
         return res.status(400).send({ message: "Please Enter Valid Password Format" });
     }
 
@@ -94,18 +104,18 @@ exports.login = (req, res) => {
                         const token = jwt.sign({
                             Email: email,
                         }, process.env.SECRET_KEY);
-                        res.setCookie('')
-                        res.status(200).send({ message: "Logged In", token: token });
+                        res.status(200).send({ message: "Logged In", token });
 
                     } else {
                         res.status(401).send({ message: "Wrong Crendentials.Try with Correct email and password" });
                     }
                 })
-                    .catch((err) => { console.log(err) });
+                    .catch((err) => { return res.status(500).send({ error: "Server Error" }) });
             }
         }
         catch (error) {
             console.log(error);
+            res.status(500).send({ error: "Server Error" });
         }
 
     })
