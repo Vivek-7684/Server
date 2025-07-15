@@ -53,14 +53,16 @@ exports.signup = (req, res) => {
             // insert new user
             User.insertUser(username, email, hashedpassword, (err) => {
 
-                if (err) { return res.status(500).send({ message: "Database error" }) };
+                if (err) {
+                    return res.status(500).send({ message: "Database error" });
+                };
 
                 res.status(201).send({ message: "Created" });
             })
         }
 
         catch (error) {
-            console.log(error);
+            res.status(500).send(error.message);
         }
     })
 
@@ -104,20 +106,42 @@ exports.login = (req, res) => {
                         const token = jwt.sign({
                             Email: email,
                         }, process.env.SECRET_KEY);
-                        res.status(200).send({ message: "Logged In", token });
+
+                        res.cookie('token', token, {
+                            httpOnly: true,
+                            secure: true, // false for dev only
+                            sameSite: 'None' // set for cross-site 
+                        });// set cookie
+                        res.status(200).send({ message: "Logged In" });
 
                     } else {
                         res.status(401).send({ message: "Wrong Crendentials.Try with Correct email and password" });
                     }
                 })
-                    .catch((err) => { return res.status(500).send({ error: "Server Error" }) });
+                    .catch((err) => { return res.status(500).send(err.message) });
             }
         }
         catch (error) {
-            console.log(error);
-            res.status(500).send({ error: "Server Error" });
+            res.status(500).send(error.message);
         }
 
     })
 
+}
+
+exports.isLoggedIn = (req, res) => {
+    try {
+        return res.status(200).json({ message: "Logged In" });
+    } catch (err) {
+        res.status(500).json({ Error: err.message });
+    }
+
+}
+
+exports.logOut = (req, res) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+    });
+    // res.status(200).json({ message: "Logged Out" });
+    res.redirect("http://localhost:3000/login");
 }

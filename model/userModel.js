@@ -15,7 +15,3 @@ exports.getUsernameByEmail = (email, callback) => {
     connection.query("Select * from ecom_user where email = ?", [email], callback);
 }
 
-
-
-
-

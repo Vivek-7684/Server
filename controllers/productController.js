@@ -3,8 +3,21 @@ const Product = require('../model/productModel');
 exports.getAllProduct = (req, res) => {
     Product.getAllProduct((err, result) => {
         try {
+            if (err) return res.status(500).send({ message: "Database Error" });
+            return res.status(200).send(result);
+        }
+        catch (err) {
+            return res.status(500).send(err);
+        }
+    })
+}
 
-            // console.log(result);
+
+exports.getSingleProduct = (req, res) => {
+    const { id } = req.query;
+    Product.getSingleProduct(id, (err, result) => {
+        try {
+            if (err) return res.status(500).send({ message: "Database Error" });
             return res.status(200).send(result);
         }
         catch (err) {
