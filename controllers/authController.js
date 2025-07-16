@@ -129,9 +129,14 @@ exports.login = (req, res) => {
 
 }
 
-exports.isLoggedIn = (req, res) => {
+exports.isLoggedIn = async (req, res) => {
     try {
-        return res.status(200).json({ message: "Logged In" });
+
+        User.getUsernameByEmail(req.Email, async (error, result) => {
+            req.username = await result[0].username;
+            return res.status(200).json({ message: "Logged In", email: req.Email, username: req.username });
+        });
+
     } catch (err) {
         res.status(500).json({ Error: err.message });
     }
@@ -141,7 +146,8 @@ exports.isLoggedIn = (req, res) => {
 exports.logOut = (req, res) => {
     res.clearCookie('token', {
         httpOnly: true,
+        secure: true, // false for dev only
+        sameSite: 'None' // set for cross-site 
     });
-    // res.status(200).json({ message: "Logged Out" });
-    res.redirect("http://localhost:3000/login");
+    res.status(200).json({ redirect: "/login" });
 }
