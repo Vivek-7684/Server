@@ -10,4 +10,6 @@ router.get("/getAll", productController.getAllProduct); // dynamic path  redirec
 
 router.get("/getSingle", CheckAndVerifyToken, productController.getSingleProduct);
 
+router.get("/getProductImages", CheckAndVerifyToken, productController.getProductImages); // images for slider 
+
 module.exports = router;

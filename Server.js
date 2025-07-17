@@ -1,6 +1,7 @@
 const express = require('express');
 const authRoutes = require('./routes/authRoutes.js');
 const productRoutes = require('./routes/productRoutes.js');
+const cartRoutes = require('./routes/cartRoutes.js');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const app = express();
@@ -23,6 +24,9 @@ app.use(cors({
 app.use('/', authRoutes); // set static route
 
 app.use('/product', productRoutes); 
+
+app.use('/cart', cartRoutes); // set cart route
+
 
 app.listen(3001, (err) => {
     if (err) console.log(err)
