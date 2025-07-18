@@ -9,5 +9,5 @@ exports.getAllProduct = (callback) => {
 }
 
 exports.getProductImages = (productId, callback) => {
-    connection.query("Select ProductImages.image from product join ProductImages on ProductImages.productId =  product.id = ?", [productId], callback);
+    connection.query("Select productImages.image from product join productImages on productImages.productId = product.id where productImages.productId = ?", [productId], callback);
 }

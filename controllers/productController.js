@@ -27,10 +27,9 @@ exports.getSingleProduct = (req, res) => {
 }
 
 exports.getProductImages = (req, res) => {
-    const { id } = req.query;
     Product.getProductImages(req.query.id, (err, result) => {
         try {
-            if (err) return res.status(500).send({ message: "Database Error" });
+            if (err) console.log(err);
             return res.status(200).send(result);
         }
         catch (err) {

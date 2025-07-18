@@ -34,7 +34,7 @@ exports.signup = (req, res) => {
         return res.status(400).send({ message: "Please Provide Valid Email" });
     }
     else if (!passwordSchema.validate(password)) {  // check letter only
-        return res.status(400).send({ message: "Password with Correct Format" });
+        return res.status(400).send({ message: "incorrect Password Format" });
     }
 
     //Check if user exists

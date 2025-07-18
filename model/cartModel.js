@@ -1,25 +1,33 @@
 const connection = require("../db");
 
 // get User's Product in Cart
-exports.getProductsInCart = (userId, cartId, productId, callback) => {
-    connection.query("SELECT * FROM cart WHERE userId = ? AND productId = ? AND cartId = ?",
-        [userId, productId, cartId], callback);
+exports.getProductsInCart = (userId, callback) => {
+    connection.query("SELECT * FROM cart where userId = ?",
+        [userId], callback);
 }
 
+// get User's Product in Cart
+exports.getSpecificProductsInCart = (userId, productId, callback) => {
+    connection.query("SELECT * FROM cart where userId = ? AND productId = ?",
+        [userId, productId], callback);
+}
+
+
 // Insert Product to Cart
-exports.insertProductToCart = (userId, cartId, productId, quantity, callback) => {
-    connection.query("Insert into table Cart(userId,cartId,productId,quantity) Values (?,?,?,?) ",
-        [userId, cartId, productId, quantity], callback);
+exports.insertProductToCart = (userId, productId, quantity, callback) => {
+    connection.query("Insert into Cart(userId,productId,quantity) Values (?,?,?) ",
+        [userId, productId, quantity], callback);
 }
 
 // update Product to Cart
-exports.updateProductToCart = (userId, cartId, productId, quantity, callback) => {
-    connection.query("Update table Cart set quantity = ? Where userId = ? AND cartId = ? AND productId = ?",
-        [quantity, userId, cartId, productId], callback);
+exports.updateProductToCart = (userId, productId, quantity, callback) => {
+    console.log("Updating Product in Cart:", userId, productId, quantity);
+    connection.query("update cart set quantity = ? where userId = ? and productId = ?",
+        [quantity, userId, productId], callback);
 }
 
 // delete Product to Cart
-exports.deleteProductFromCart = (userId, cartId, productId, callback) => {
-    connection.query("delete from table Cart  Where userId = ? AND cartId = ? AND productId = ?",
-        [quantity, userId, cartId, productId], callback);
+exports.deleteProductFromCart = (userId, productId, callback) => {
+    connection.query("delete from Cart  Where userId = ? AND  productId = ?",
+        [quantity, userId, productId], callback);
 }
