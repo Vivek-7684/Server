@@ -13,7 +13,6 @@ exports.insertProductToCart = (userId, productId, quantity, callback) => {
 
 // update Product to Cart
 exports.updateProductToCart = (userId, productId, quantity, callback) => {
-    console.log("Updating Product in Cart:", userId, productId, quantity);
     connection.query("update cart set quantity = ? where userId = ? and productId = ?",
         [quantity, userId, productId], callback);
 }
@@ -21,5 +20,5 @@ exports.updateProductToCart = (userId, productId, quantity, callback) => {
 // delete Product to Cart
 exports.deleteProductFromCart = (userId, productId, callback) => {
     connection.query("delete from Cart  Where userId = ? AND  productId = ?",
-        [quantity, userId, productId], callback);
+        [ userId, productId], callback);
 }

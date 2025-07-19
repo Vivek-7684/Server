@@ -29,11 +29,11 @@ exports.getSingleProduct = (req, res) => {
 exports.getProductImages = (req, res) => {
     Product.getProductImages(req.query.id, (err, result) => {
         try {
-            if (err) console.log(err);
+            if (err) res.status(500).send(err.message);
             return res.status(200).send(result);
         }
         catch (err) {
-            return res.status(500).send(err);
+            return res.status(500).send(err.message);
         }
     })
 }
