@@ -89,7 +89,7 @@ exports.removeProductFromCart = (req, res) => {
             cartModel.getProductsInCart(userId, (err, result) => {
                 if (err) return res.status(500).send({ message: "Database Error" });
 
-                if (result.some(item => item.id === productId && item.quantity > 1)) { // check if product exists and quantity is greater than the quantity to be removed
+                if (result.some(item => item.id === productId && item.quantity > 1)) { // check if product exists and quantity is greater than 1
 
                     const existingProduct = result.filter(item => item.id === productId); // get the existing product
 

@@ -28,13 +28,13 @@ exports.signup = (req, res) => {
         .has().not().spaces(); // set rules
 
     if (username && (!validator.isAlpha(username.split(' ').join('')))) {  // remove white space in username from both side 
-        return res.status(400).send({ message: "Name must letter only" });
+        return res.status(400).send({ message: "Your username needs a quick check.Kindly review it." });
     }
     else if (!validator.isEmail(email)) {
-        return res.status(400).send({ message: "Please Provide Valid Email" });
+        return res.status(400).send({ message: "Email doesn’t look right.Kindly update it as per our guidelines." });
     }
     else if (!passwordSchema.validate(password)) {  // check letter only
-        return res.status(400).send({ message: "incorrect Password Format" });
+        return res.status(400).send({ message: "Please check your password and make sure it meets all requirements." });
     }
 
     //Check if user exists
@@ -46,7 +46,7 @@ exports.signup = (req, res) => {
 
             if (error) { return res.status(500).send({ message: "Database Error" }); }
 
-            else if (len > 0) { return res.status(409).send({ message: "User Already Exist.Try with other username and email" }); }
+            else if (len > 0) { return res.status(409).send({ message: "We already have an account with this username or email. Please choose another" }); }
 
             const hashedpassword = await bcrypt.hash(password, 10);
 
@@ -57,7 +57,7 @@ exports.signup = (req, res) => {
                     return res.status(500).send({ message: "Database error" });
                 };
 
-                res.status(201).send({ message: "Created" });
+                res.status(201).send({ message: "Welcome! Your account has been created successfully. Start exploring amazing products now!" });
             })
         }
 
@@ -87,10 +87,10 @@ exports.login = (req, res) => {
         .has().not().spaces(); // set rules
 
     if (!validator.isEmail(email)) {
-        return res.status(400).send({ message: "Please Provide Valid Email" });
+        return res.status(400).send({ message: "Email doesn’t look right.Kindly update it as per our guidelines." });
     }
     else if (!passwordSchema.validate(password)) {  // check letter only
-        return res.status(400).send({ message: "Please Enter Valid Password Format" });
+        return res.status(400).send({ message: "Please check your password and make sure it meets all requirements." });
     }
 
     User.getUsernameByEmail(email, (error, result) => {
@@ -98,7 +98,7 @@ exports.login = (req, res) => {
         try {
             if (error) return res.status(500).send({ message: "Server Error" });
 
-            else if (result.length === 0) return res.status(401).send({ message: "User does not exist.Please get Registered" });
+            else if (result.length === 0) return res.status(401).send({ message: "The email or password you entered doesn’t match our records. Please try again." });
 
             else {
                 bcrypt.compare(password, result[0].password).then((result) => {
@@ -112,10 +112,10 @@ exports.login = (req, res) => {
                             secure: true, // false for dev only
                             sameSite: 'None' // set for cross-site 
                         });// set cookie
-                        res.status(200).send({ message: "Logged In" });
+                        res.status(200).send({ message: "Welcome back! You’ve logged in Successfully." });
 
                     } else {
-                        res.status(401).send({ message: "Wrong Crendentials.Try with Correct email and password" });
+                        res.status(401).send({ message: "The email or password you entered doesn’t match our records. Please try again." });
                     }
                 })
                     .catch((err) => { return res.status(500).send(err.message) });
@@ -129,12 +129,14 @@ exports.login = (req, res) => {
 
 }
 
-exports.isLoggedIn = async (req, res) => {
+exports.isLoggedIn = (req, res) => {
     try {
+        User.getUsernameByEmail(req.Email, (error, result) => {
+            req.username = result[0]?.username;
 
-        User.getUsernameByEmail(req.Email, async (error, result) => {
-            req.username = await result[0].username;
-            return res.status(200).json({ message: "Logged In", email: req.Email, username: req.username });
+            if (req.username) {
+                return res.status(200).json({ message: `Welcome Back! ${req?.username}`, email: req.Email, username: req.username });
+            };
         });
 
     } catch (err) {
@@ -149,5 +151,5 @@ exports.logOut = (req, res) => {
         secure: true, // false for dev only
         sameSite: 'None' // set for cross-site 
     });
-    res.status(200).json({ redirect: "/login" });
+    res.status(200).json({ message: "You’ve logged out successfully. See you soon!", redirect: "/login" });
 }
