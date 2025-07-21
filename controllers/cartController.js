@@ -1,6 +1,5 @@
 const userModel = require("../model/userModel");
 const cartModel = require("../model/cartModel");
-const productModel = require("../model/productModel");
 
 // get User's Product in Cart
 exports.getProductsInCart = (req, res) => {
@@ -17,14 +16,14 @@ exports.getProductsInCart = (req, res) => {
                     if (err) return res.status(500).send({ message: "Database Error" });
                     return res.status(200).send(result);
                 } catch (err) {
-                    return res.status(500).send(err.message);
+                    return res.status(500).json({ Error: "Something Went Wrong" });
                 }
             });
         })
 
     }
     catch (err) {
-        return res.status(500).send(err.message);
+        return res.status(500).json({ Error: "Something Went Wrong" });
     }
 
 }
@@ -103,7 +102,7 @@ exports.removeProductFromCart = (req, res) => {
                     });
 
                 } else {
-    
+
                     cartModel.deleteProductFromCart(userId, productId, (err, result) => {
                         if (err) return res.status(500).send({ message: "Database Error" });
                         return res.status(200).send({ message: "Product deleted from cart Successfully" });
@@ -113,7 +112,7 @@ exports.removeProductFromCart = (req, res) => {
         })
     }
     catch (err) {
-        return res.status(500).send(err.message)
+        return res.status(500).json({ Error: "Something Went Wrong" });
     };
 
 }

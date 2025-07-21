@@ -10,7 +10,7 @@ router.post("/signup", authController.signup); // dynamic path  redirect to cont
 
 router.post("/login", authController.login);
 
-router.post("/checkLoggedin", checkAndVerifyToken, authController.isLoggedIn);
+router.get("/checkLoggedin", checkAndVerifyToken, authController.isLoggedIn);
 
 router.post("/logOut", checkAndVerifyToken, authController.logOut); // change server state with clear token
 

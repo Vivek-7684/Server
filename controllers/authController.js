@@ -62,7 +62,7 @@ exports.signup = (req, res) => {
         }
 
         catch (error) {
-            res.status(500).send(error.message);
+            res.status(500).json({ Error: "Something Went Wrong" });
         }
     })
 
@@ -122,7 +122,7 @@ exports.login = (req, res) => {
             }
         }
         catch (error) {
-            res.status(500).send(error.message);
+           res.status(500).json({ Error: "Something Went Wrong" });
         }
 
     })
@@ -140,16 +140,21 @@ exports.isLoggedIn = (req, res) => {
         });
 
     } catch (err) {
-        res.status(500).json({ Error: err.message });
+        res.status(500).json({ Error: "Something Went Wrong" });
     }
 
 }
 
 exports.logOut = (req, res) => {
-    res.clearCookie('token', {
-        httpOnly: true,
-        secure: true, // false for dev only
-        sameSite: 'None' // set for cross-site 
-    });
-    res.status(200).json({ message: "You’ve logged out successfully. See you soon!", redirect: "/login" });
+    try {
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: true, // false for dev only
+            sameSite: 'None' // set for cross-site 
+        });
+        res.status(200).json({ message: "You’ve logged out successfully. See you soon!", redirect: "/login" });
+    } catch (err) {
+        res.status(500).json({ Error: "Something Went Wrong" });
+    }
+    
 }

@@ -7,7 +7,7 @@ exports.getAllProduct = (req, res) => {
             return res.status(200).send(result);
         }
         catch (err) {
-            return res.status(500).send(err);
+            return res.status(500).json({ Error: "Something Went Wrong" });
         }
     })
 }
@@ -21,7 +21,7 @@ exports.getSingleProduct = (req, res) => {
             return res.status(200).send(result);
         }
         catch (err) {
-            return res.status(500).send(err);
+            return res.status(500).json({ Error: "Something Went Wrong" });
         }
     })
 }
@@ -33,7 +33,7 @@ exports.getProductImages = (req, res) => {
             return res.status(200).send(result);
         }
         catch (err) {
-            return res.status(500).send(err.message);
+            return res.status(500).json({ Error: "Something Went Wrong" });
         }
     })
 }

@@ -17,7 +17,7 @@ const CheckAndVerifyToken = async (req, res, next) => {
         req.Email = decoded.Email;
         next();
     } catch (err) {
-        res.status(401).json({ error: "Invalid or expired Login Session. Please login again." });
+        res.status(401).json({ error: "Your session has ended for security concern. Please log in to continue." });
     }
 }
 

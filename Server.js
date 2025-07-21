@@ -2,6 +2,7 @@ const express = require('express');
 const authRoutes = require('./routes/authRoutes.js');
 const productRoutes = require('./routes/productRoutes.js');
 const cartRoutes = require('./routes/cartRoutes.js');
+const wishListRoutes = require('./routes/wishListRoutes.js');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const app = express();
@@ -25,6 +26,8 @@ app.use('/', authRoutes); // set static route
 app.use('/product', productRoutes); 
 
 app.use('/cart', cartRoutes); // set cart route
+
+app.use('/wishList', wishListRoutes); // set wishlist route
 
 
 app.listen(3001, (err) => {
