@@ -34,8 +34,6 @@ exports.addProductsInWishList = (req, res) => {
 
             const UserId = result[0].id;
 
-            console.log(result[0].id);
-
             wishlistModel.checkProductInWishList(UserId, productId, (err, result) => {
                 if (err) return res.status(500).send({ message: "Database Error" });
                 if (result.length > 0) {
