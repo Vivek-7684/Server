@@ -122,13 +122,14 @@ exports.login = (req, res) => {
             }
         }
         catch (error) {
-           res.status(500).json({ Error: "Something Went Wrong" });
+            res.status(500).json({ Error: "Something Went Wrong" });
         }
 
     })
 
 }
 
+// check logged in or not
 exports.isLoggedIn = (req, res) => {
     try {
         User.getUsernameByEmail(req.Email, (error, result) => {
@@ -145,6 +146,7 @@ exports.isLoggedIn = (req, res) => {
 
 }
 
+// check logOut or not
 exports.logOut = (req, res) => {
     try {
         res.clearCookie('token', {
@@ -156,5 +158,55 @@ exports.logOut = (req, res) => {
     } catch (err) {
         res.status(500).json({ Error: "Something Went Wrong" });
     }
-    
+
 }
+
+// view profile
+exports.viewProfile = (req, res) => {
+    User.getUsernameByEmail(req.Email, (err, result) => {
+        if (err) return res.status(500).json({ error: "Database error" });
+
+        if (result.length === 0) return res.status(404).json({ message: "User not found" });
+
+        const user = result[0];
+        res.status(200).json({
+            username: user.username || "N/A",
+            email: user.email || "N/A",
+            phone: user.phone || "N/A",
+            country: user.country || "N/A",
+            state: user.state || "N/A",
+            city: user.city || "N/A",
+            image: user.image ? user.image.toString('base64') : null
+        });
+    });
+};
+
+// edit user profile
+exports.editProfile = (req, res) => {
+
+    let Email = req.Email;
+
+    const { username, email, country, state, city } = req.body;
+
+
+
+    const fields = [];
+    const values = [];
+
+    if (username) { fields.push("username = ?"); values.push(username); }
+    if (email) { fields.push("email = ?"); values.push(email); }
+    if (country) { fields.push("country = ?"); values.push(country); }
+    if (state) { fields.push("state = ?"); values.push(state); }
+    if (city) { fields.push("city = ?"); values.push(city); }
+
+    if (fields.length === 0) {
+        return res.status(400).json({ message: "No data to update" });
+    }
+
+    User.updateUser(fields, values, Email, (err) => {
+        if (err) return res.status(500).json({ error: "Database error" });
+
+        return res.status(200).json({ message: "Profile updated successfully" });
+    });
+
+};
