@@ -13,6 +13,7 @@ const CheckAndVerifyToken = async (req, res, next) => {
     
     try {
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
+
         // check valid token 
         req.Email = decoded.Email;
         next();
