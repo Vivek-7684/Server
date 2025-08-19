@@ -79,34 +79,55 @@ exports.addProduct = (req, res) => {
 // PUT /products/:id
 exports.updateProduct = (req, res) => {
 
-    const { id } = req.params;
-    const { image, previewImages, title, description, category, min_price, max_price } = req.body;
+    try {
+        const { id } = req.params;
 
-    // server-side validation
-    if (!title || !description || !category || !min_price || !max_price) {
-        return res.status(400).json({ error: "All required fields must be filled" });
+        const { previewImages, image, title, description, category, min_price, max_price } = req.body;
+
+        // server-side validation
+        if (!title || !description || !category || !min_price || !max_price) {
+            return res.status(400).json({ error: "All required fields must be filled" });
+        }
+
+        if (isNaN(min_price) || isNaN(max_price)) {
+            return res.status(400).json({ error: "Prices must be numbers" });
+        }
+
+        if (Number(min_price) > Number(max_price)) {
+            return res.status(400).json({ error: "Min price cannot be greater than max price" });
+        }
+
+        let mainImageBuffer = null;
+        let previewImagesBuffer = null;
+
+        if (typeof image == "string") {
+            mainImageBuffer = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ""), "base64");
+        } else {
+            mainImageBuffer = image;
+        }
+
+        Product.updateProduct(id, mainImageBuffer, title, description, category, min_price, max_price, (err, result) => {
+
+            if (err) return res.status(500).json({ error: err.message });
+   
+            // if (previewImages) {
+
+            //     previewImagesBuffer = previewImages.map((images) => Buffer.from(images.replace(/^data:image\/\w+;base64,/, ""), "base64"));
+
+            //     previewImagesBuffer.forEach((images) => {
+            //         Product.updatePreviewImages(id, images, (err) => {
+            //             if (err) return res.status(500).json({ error: "Server Error" });
+            //         })
+            //     })
+
+            // }
+
+            return res.status(200).json({ message: "Product updated", product: result });
+        });
     }
-
-    if (isNaN(min_price) || isNaN(max_price)) {
-        return res.status(400).json({ error: "Prices must be numbers" });
+    catch (err) {
+        console.log(err.message);
     }
-
-    if (Number(min_price) > Number(max_price)) {
-        return res.status(400).json({ error: "Min price cannot be greater than max price" });
-    }
-
-    let mainImageBuffer = null;
-    
-    if (image) {
-        mainImageBuffer = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ""), "base64");
-    }
-
-    Product.updateProduct(id, mainImageBuffer, title, description, category, min_price, max_price, (err, result) => {
-
-        if (err) return res.status(500).json({ error: err.message });
-
-        return res.status(200).json({ message: "Product updated", product: result });
-    });
 
 };
 

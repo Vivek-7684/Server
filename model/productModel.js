@@ -26,17 +26,17 @@ exports.addPreviewImage = (productId, imageBuffer, callback) => {
 // update
 exports.updateProduct = (id, image, title, content, categories, min_price, max_price, callback) => {
   connection.query(
-    "UPDATE product SET image = IFNULL(?, image), title=?, content=?, categories=?, min_price=?, max_price=? WHERE id=?",
+    "UPDATE product SET image = ?, title=?, content=?, categories=?, min_price=?, max_price=? WHERE id=?",
     [image, title, content, categories, min_price, max_price, id],
     callback
   );
 };
 
-// // update previewImages
-// exports.updatePreviewImages = (productId, imageBuffer, callback) => {
-//   const query = `INSERT INTO productimages (productId, image) VALUES (?, ?)`;
-//   connection.query(query, [productId, imageBuffer], callback);
-// };
+// update previewImages
+exports.updatePreviewImages = (productId, imageBuffer, callback) => {
+  const query = `update table productimages set productId = ? and imageBuffer = ?`;
+  connection.query(query, [productId, imageBuffer], callback);
+};
 
 // delete
 exports.deleteProduct = (id, callback) => {
