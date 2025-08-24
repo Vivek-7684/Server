@@ -80,11 +80,8 @@ exports.addProduct = (req, res) => {
 
 // PUT /products/:id
 exports.updateProduct = (req, res) => {
-
     try {
-        // update id
         const { id } = req.params;
-
         const { previewImages, image, title, description, category, min_price, max_price } = req.body;
 
         // validation
@@ -100,46 +97,50 @@ exports.updateProduct = (req, res) => {
             return res.status(400).json({ error: "Min price cannot be greater than max price" });
         }
 
-        let mainImageBuffer = null;
-        let previewImagesBuffer = null;
+        // main image
+        let mainImageBuffer = typeof image === "string"
+            ? Buffer.from(image.replace(/^data:image\/\w+;base64,/, ""), "base64")
+            : image;
 
-        if (typeof image == "string") { // check base64 or not 
-            mainImageBuffer = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ""), "base64");
-        } else {
-            mainImageBuffer = image;
-        }
+        // update main product
+        Product.updateProduct(id, mainImageBuffer, title, description, category, min_price, max_price, async (err, result) => {
+            if (err) return res.status(500).json({ error: "Error updating product" });
 
-        Product.updateProduct(id, mainImageBuffer, title, description, category, min_price, max_price, (err, result) => {
+            try {
+                if (previewImages && previewImages.length > 0) {
+                    // delete old preview images
+                    Product.deletePreviewImages(id, async (err) => {
+                        if (err) return res.status(500).json({ error: err.message });
 
-            if (err) return res.status(500).json({ error: err.message });
+                        // convert new images
+                        const previewImagesBuffer = previewImages.map((img) =>
+                            Buffer.from(img.replace(/^data:image\/\w+;base64,/, ""), "base64")
+                        );
 
-            if (previewImages) {
-                
-                Product.deletePreviewImages(id, (err) => {
+                        // insert all new preview images
+                        const insertPromises = previewImagesBuffer.map(
+                            (img) =>
+                                new Promise((resolve, reject) => {
+                                    Product.insertPreviewImages(id, img, (err, result) => {
+                                        if (err) return reject(err);
+                                        resolve(result);
+                                    });
+                                })
+                        );
 
-                    if (err) return res.status(500).json({ error: err.message });
+                        await Promise.all(insertPromises);  // collect all 
+                    });
+                }
 
-                    previewImagesBuffer = previewImages.map((images) => Buffer.from(images.replace(/^data:image\/\w+;base64,/, ""), "base64"));
-
-                    previewImagesBuffer.forEach((images) => {
-
-                        Product.insertPreviewImages(id, images, (err) => {
-                            if (err) return res.status(500).json({ error: "Server Error" });
-                        })
-
-                    })
-
-                })
-
+                return res.status(200).json({ message: "Product updated", product: result });
+            } catch (error) {
+                return res.status(500).json({ error: error.message });
             }
-            return res.status(200).json({ message: "Product updated", product: result });
         });
-
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err.message);
+        return res.status(500).json({ error: "Unexpected error" });
     }
-
 };
 
 
