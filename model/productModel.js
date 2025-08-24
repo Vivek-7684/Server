@@ -32,10 +32,16 @@ exports.updateProduct = (id, image, title, content, categories, min_price, max_p
   );
 };
 
-// update previewImages
-exports.updatePreviewImages = (productId, imageBuffer, callback) => {
-  const query = `update table productimages set productId = ? and imageBuffer = ?`;
+// insert previewImages
+exports.insertPreviewImages = (productId, imageBuffer, callback) => {
+  const query = `INSERT INTO productImages(productId,imageBuffer) VALUES (?,?)`;
   connection.query(query, [productId, imageBuffer], callback);
+};
+
+// update previewImages
+exports.deletePreviewImages = (productId, imageBuffer, callback) => {
+  const query = `DELETE FROM productimages  WHERE productId = ?`;
+  connection.query(query, [productId], callback);
 };
 
 // delete

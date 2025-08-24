@@ -39,9 +39,10 @@ exports.getProductImages = (req, res) => {
 }
 
 exports.addProduct = (req, res) => {
+
     let { image, previewImages, title, description, category, min_price, max_price } = req.body;
 
-    // server-side validation
+    // validation
     if (!title || !description || !category || !min_price || !max_price) {
         return res.status(400).json({ error: "All required fields must be filled" });
     }
@@ -58,6 +59,7 @@ exports.addProduct = (req, res) => {
     const mainImageBuffer = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ""), "base64");
 
     Product.addProduct(mainImageBuffer, title, description, category, min_price, max_price, (err, result) => {
+
         if (err) return res.status(500).json({ error: err.message });
 
         const productId = result.insertId;
@@ -80,11 +82,12 @@ exports.addProduct = (req, res) => {
 exports.updateProduct = (req, res) => {
 
     try {
+        // update id
         const { id } = req.params;
 
         const { previewImages, image, title, description, category, min_price, max_price } = req.body;
 
-        // server-side validation
+        // validation
         if (!title || !description || !category || !min_price || !max_price) {
             return res.status(400).json({ error: "All required fields must be filled" });
         }
@@ -100,7 +103,7 @@ exports.updateProduct = (req, res) => {
         let mainImageBuffer = null;
         let previewImagesBuffer = null;
 
-        if (typeof image == "string") {
+        if (typeof image == "string") { // check base64 or not 
             mainImageBuffer = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ""), "base64");
         } else {
             mainImageBuffer = image;
@@ -109,21 +112,29 @@ exports.updateProduct = (req, res) => {
         Product.updateProduct(id, mainImageBuffer, title, description, category, min_price, max_price, (err, result) => {
 
             if (err) return res.status(500).json({ error: err.message });
-   
-            // if (previewImages) {
 
-            //     previewImagesBuffer = previewImages.map((images) => Buffer.from(images.replace(/^data:image\/\w+;base64,/, ""), "base64"));
+            if (previewImages) {
+                
+                Product.deletePreviewImages(id, (err) => {
 
-            //     previewImagesBuffer.forEach((images) => {
-            //         Product.updatePreviewImages(id, images, (err) => {
-            //             if (err) return res.status(500).json({ error: "Server Error" });
-            //         })
-            //     })
+                    if (err) return res.status(500).json({ error: err.message });
 
-            // }
+                    previewImagesBuffer = previewImages.map((images) => Buffer.from(images.replace(/^data:image\/\w+;base64,/, ""), "base64"));
 
+                    previewImagesBuffer.forEach((images) => {
+
+                        Product.insertPreviewImages(id, images, (err) => {
+                            if (err) return res.status(500).json({ error: "Server Error" });
+                        })
+
+                    })
+
+                })
+
+            }
             return res.status(200).json({ message: "Product updated", product: result });
         });
+
     }
     catch (err) {
         console.log(err.message);
