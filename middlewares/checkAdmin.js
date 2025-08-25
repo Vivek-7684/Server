@@ -6,14 +6,14 @@ dotenv.config();
 
 // check Role and verify Admin
 const checkAdmin = async (req, res, next) => {
-
-    const token = req.headers.cookie.split("=")[1];
-
-    if (!token) {
-        return res.status(401).json({ message: "Token not found" });
-    }
-
     try {
+        const token = req.headers.cookie.split("=")[1];
+
+        if (!token) {
+            return res.status(401).json({ message: "Token not found" });
+        }
+
+
         const a = jwt.verify(token, process.env.SECRET_KEY);
 
         // if admin 
