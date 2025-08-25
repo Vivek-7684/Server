@@ -1,11 +1,14 @@
 const express = require('express');
 const authRoutes = require('./routes/authRoutes.js');
+const profileRoutes = require('./routes/profileRoutes.js');
 const productRoutes = require('./routes/productRoutes.js');
 const cartRoutes = require('./routes/cartRoutes.js');
 const wishListRoutes = require('./routes/wishListRoutes.js');
-const profileRoutes = require('./routes/profileRoutes.js');
+const pricingRoutes = require('./routes/pricingRoutes.js');
+
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+
 const app = express();
 const PORT = 3001;
 
@@ -24,14 +27,15 @@ app.use(cors({
 
 app.use('/', authRoutes); // set static route
 
-app.use('/product', productRoutes);
+app.use('/profile', profileRoutes); // profile route
+
+app.use('/product', productRoutes); // product route
 
 app.use('/cart', cartRoutes); // set cart route
 
 app.use('/wishList', wishListRoutes); // set wishlist route
 
-app.use('/profile', profileRoutes);
-
+app.use('/pricing', pricingRoutes);  // pricing
 
 app.listen(3001, (err) => {
     if (err) console.log(err);
