@@ -148,9 +148,29 @@ exports.updateProduct = (req, res) => {
 exports.deleteProduct = (req, res) => {
     const { id } = req.params;
 
-    Product.deleteProduct(id, (err, result) => {
+    // check previewImages or not 
+    Product.getProductImages(id, (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
-        return res.status(200).json({ message: "Product deleted" });
-    });
+        // if previewImages exist then delete all with product
+        if (result.length > 0) {
+            Product.deletePreviewImages(id, (deleteError) => {
+                if (deleteError) return res.status(500).json({ error: deleteError.message });
+
+                Product.deleteProduct(id, (err) => {
+                    if (err) return res.status(500).json({ error: err.message });
+                    return res.status(200).json({ message: "Product and previewImages deleted" });
+                });
+            })
+
+        } else {
+            // delete product only
+            Product.deleteProduct(id, (err) => {
+                if (err) return res.status(500).json({ error: err.message });
+                return res.status(200).json({ message: "Product deleted" });
+            });
+        }
+    })
+
+
 };
 
