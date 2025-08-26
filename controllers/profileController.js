@@ -9,7 +9,7 @@ exports.viewProfile = (req, res) => {
         User.getUsernameByEmail(req.Email, (err, result) => {
             if (err) return res.status(500).json({ error: "Database error" });
 
-            if (result.length === 0) return res.status(404).json({ message: "User not found" });
+            if (result.length === 0) return res.status(404).json({ message: "User not found.Please Log in with new email or password." });
 
             const user = result[0];
             res.status(200).json({
