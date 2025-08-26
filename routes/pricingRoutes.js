@@ -6,7 +6,7 @@ const pricingController = require("../controllers/pricingController");
 // check admin
 const checkAdmin = require('../middlewares/checkAdmin');
 
-router.get("/get", checkAdmin, pricingController.getPricing);
+router.get("/get", pricingController.getPricing);
 
 router.post("/add", checkAdmin, pricingController.addPricing);
 
