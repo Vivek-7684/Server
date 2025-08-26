@@ -6,6 +6,8 @@ const pricingController = require("../controllers/pricingController");
 // check admin
 const checkAdmin = require('../middlewares/checkAdmin');
 
+router.get("/get", checkAdmin, pricingController.getPricing);
+
 router.post("/add", checkAdmin, pricingController.addPricing);
 
 router.put("/edit", checkAdmin, pricingController.editPricing);

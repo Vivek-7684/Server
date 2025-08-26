@@ -1,8 +1,22 @@
 const pricingModel = require('../model/pricingModal');
 
+// get price 
+
+exports.getPricing = (req, res) => {
+    try {
+        pricingModel.getPricing((err, result) => {
+            if (err) return res.status(500).send({ message: "server error" });
+            res.status(200).send(result);
+        })
+
+    } catch (err) {
+        res.status(500).send({ message: err.message });
+    }
+
+}
+
 
 // add price 
-
 exports.addPricing = (req, res) => {
     const { charges, discount } = req.body;
 
@@ -42,7 +56,8 @@ exports.addPricing = (req, res) => {
 
                 // if exist then update
                 else if (result.length > 0) {
-                    pricingModel.editPricing(charges, discount, (err) => {
+                    //if no discount then 0
+                    pricingModel.editPricing(charges, discount || 0, (err) => {
                         if (err) res.status(500).json({ message: err.message });
                         res.status(200).json({ message: "Pricing Updated" });
                     })
