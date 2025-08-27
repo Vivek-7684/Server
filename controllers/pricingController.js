@@ -5,8 +5,15 @@ const pricingModel = require('../model/pricingModal');
 exports.getPricing = (req, res) => {
     try {
         pricingModel.getPricing((err, result) => {
+
             if (err) return res.status(500).send({ message: "server error" });
-            res.status(200).send(result);
+
+            if (result.length > 0) {
+                return res.status(200).json({ message: "get pricing data", result: result });
+            } else {
+                res.status(404).json({ message: "Data not found.Please Add Pricing" });
+            }
+
         })
 
     } catch (err) {
@@ -28,7 +35,7 @@ exports.addPricing = (req, res) => {
                 throw new Error("discount must be number.");
             }
             // range check
-            else if (!(discount => 0 && discount <= 100)) {
+            else if (!(discount >= 0 && discount <= 100)) {
                 throw new Error("discount range must be 0 to 100.");
             }
         }
@@ -44,7 +51,7 @@ exports.addPricing = (req, res) => {
         }
 
         // charges range
-        else if (!(charges => 1 && charges <= 100)) {
+        else if (!((charges) >= 1 && (charges) <= 100)) {
             throw new Error("Charges range must be 0 to 100.");
         }
 
@@ -65,8 +72,8 @@ exports.addPricing = (req, res) => {
 
                 //  else add charges and discount
                 else {
-                    pricingModel.addPricing(charges, discount, (err) => {
-                        if (err) res.status(500).json({ message: "Server Error" });
+                    pricingModel.addPricing(charges, discount || 0, (err) => {
+                        if (err) res.status(500).json({ message: err.message });
                         res.status(200).json({ message: "Pricing Added" });
                     })
                 }
@@ -75,7 +82,7 @@ exports.addPricing = (req, res) => {
         }
 
     } catch (err) {
-        return res.status(500).json({ error: err.message });
+        return res.status(500).json({ message: err.message });
     }
 
 }
