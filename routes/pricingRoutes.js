@@ -10,6 +10,5 @@ router.get("/get", pricingController.getPricing);
 
 router.post("/add", checkAdmin, pricingController.addPricing);
 
-router.put("/edit", checkAdmin, pricingController.editPricing);
 
 module.exports = router;

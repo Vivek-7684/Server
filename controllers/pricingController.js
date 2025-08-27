@@ -36,7 +36,7 @@ exports.addPricing = (req, res) => {
             }
             // range check
             else if (!(discount >= 0 && discount <= 100)) {
-                throw new Error("discount range must be 0 to 100.");
+                throw new Error("discount range must be 1 to 100.");
             }
         }
 
@@ -52,7 +52,7 @@ exports.addPricing = (req, res) => {
 
         // charges range
         else if (!((charges) >= 1 && (charges) <= 100)) {
-            throw new Error("Charges range must be 0 to 100.");
+            throw new Error("Charges range must be 1 to 100.");
         }
 
         else {
@@ -87,47 +87,3 @@ exports.addPricing = (req, res) => {
 
 }
 
-// edit price 
-
-exports.editPricing = (req, res) => {
-    const { charges, discount } = req.body;
-
-    try {
-        // if discount,check 
-        if (req.body?.discount) {
-            if (isNaN(discount)) {
-                throw new Error("discount must be number.");
-            }
-            // range check
-            else if (discount => 0 && discount <= 100) {
-                throw new Error("discount range must be 0 to 100.");
-            }
-        }
-
-        // required
-        if (!charges) {
-            throw new Error("Shipping Charges is required.");
-        }
-
-        // number after conversion
-        else if (isNaN(charges)) {
-            throw new Error("Shipping Charges must be number.");
-        }
-
-        // charges range
-        else if (charges => 1 && charges <= 100) {
-            throw new Error("Charges range must be 0 to 100.");
-        }
-
-        else {
-            pricingModel.editPricing(charges, discount, (err) => {
-                if (err) res.status(500).json({ error: "Server Error" });
-                res.status(200).json({ message: "Pricing Edited" });
-            })
-        }
-    }
-    catch (err) {
-        return res.status(500).json({ error: err.message });
-    }
-
-}
