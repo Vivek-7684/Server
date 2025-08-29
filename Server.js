@@ -38,7 +38,7 @@ app.use('/wishList', wishListRoutes); // set wishlist route
 
 app.use('/pricing', pricingRoutes);  // pricing
 
-app.use('/coupon', couponRoutes);
+app.use('/coupon', couponRoutes);   // coupon
 
 app.listen(3001, (err) => {
     if (err) console.log(err);
