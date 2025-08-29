@@ -5,6 +5,7 @@ const productRoutes = require('./routes/productRoutes.js');
 const cartRoutes = require('./routes/cartRoutes.js');
 const wishListRoutes = require('./routes/wishListRoutes.js');
 const pricingRoutes = require('./routes/pricingRoutes.js');
+const couponRoutes = require('./routes/couponRoutes.js');
 
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
@@ -36,6 +37,8 @@ app.use('/cart', cartRoutes); // set cart route
 app.use('/wishList', wishListRoutes); // set wishlist route
 
 app.use('/pricing', pricingRoutes);  // pricing
+
+app.use('/coupon', couponRoutes);
 
 app.listen(3001, (err) => {
     if (err) console.log(err);

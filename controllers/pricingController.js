@@ -17,7 +17,7 @@ exports.getPricing = (req, res) => {
         })
 
     } catch (err) {
-        res.status(500).send({ message: err.message });
+        res.status(500).send({ message:"Server Error" });
     }
 
 }
