@@ -103,7 +103,7 @@ exports.editCoupon = (req, res) => {
         }
 
         // update coupon
-        couponModal.updateCoupon(couponName, minPrice, offer, id, (err, result) => {
+        couponModal.updateCoupon(couponName, minPrice, offer, Number(id), (err, result) => {
             if (err) {
                 return res.status(500).json({ message: "Server Error" });
             }
@@ -117,3 +117,32 @@ exports.editCoupon = (req, res) => {
         return res.status(err.statusCode || 500).json({ message: err.message || "Server Error" });
     }
 };
+
+// delete coupon 
+exports.deleteCoupon = (req, res) => {
+    
+    try {
+        const id = req.params.id;
+       
+        couponModal.checkCoupon(Number(id), (error, result) => {
+           
+            if (error) return res.status(500).json({ message: error.stack });
+
+            if (result.length > 0) {
+                
+                couponModal.deleteCoupon(Number(id), (err) => {
+                     
+                    if (err) return res.status(500).json({ message: err.stack });
+
+                    return res.status(200).json({ message: "Coupon deleted!!", status: 200 });
+                })
+            } else {
+                return res.status(404).json({ message: "Coupon Not Found!!", status: 404 });
+            }
+        })
+
+    } catch (err) {
+        return res.status(500).json({ message: err.stack });
+    }
+
+}

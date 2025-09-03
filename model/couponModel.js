@@ -6,6 +6,11 @@ exports.getCoupon = (callback) => {
     connection.query("Select * from coupon", callback);
 }
 
+//check Coupon 
+exports.checkCoupon = (id, callback) => {
+    connection.query("Select * from coupon where id = ? ", [id], callback);
+}
+
 // insert Coupon 
 exports.addCoupon = (couponName, minPrice, offer, callback) => {
     connection.query("Insert into coupon(couponName,minPrice,offer) Values (?,?,?)",

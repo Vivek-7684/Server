@@ -1,4 +1,5 @@
 const express = require("express");
+
 const router = express.Router();
 
 const couponcontroller = require("../controllers/couponController");
@@ -15,5 +16,7 @@ router.post("/addCoupon", checkAdmin, couponcontroller.addCoupon);
 // route to add coupon 
 router.put("/editCoupon/:id", checkAdmin, couponcontroller.editCoupon);
 
+// delete coupon
+router.delete("/deleteCoupon/:id", checkAdmin, couponcontroller.deleteCoupon);
 
 module.exports = router;
